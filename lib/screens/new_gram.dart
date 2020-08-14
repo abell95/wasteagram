@@ -52,6 +52,8 @@ class _NewGramScreenState extends State<NewGramScreen> {
       datePosted: time
     );
 
+    wastePost.validateLatLon();
+
     Firestore.instance.collection("posts").add({
       'quantity': wastePost.numItems,
       'imageURL': wastePost.photoURL,
