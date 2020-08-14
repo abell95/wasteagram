@@ -79,13 +79,18 @@ class _NewGramScreenState extends State<NewGramScreen> {
         ),
         body: image == null
           ? Center(
-            child: RaisedButton(
+            child: Semantics(
+              child: RaisedButton(
                 child: Text('Select photo'),
                 onPressed: () {
                   getImage();
                 }
               ),
+              onTapHint: 'Select a photo from the gallery',
+              enabled: true,
+              button: true
             )
+          )
           : Center(
             child: Form(
               key: formkey,
@@ -100,33 +105,43 @@ class _NewGramScreenState extends State<NewGramScreen> {
                   ),
                   SizedBox(height: 40),
                   Container(
-                      child: TextFormField(
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: 'Number of items',
-                          border: OutlineInputBorder(),
+                      child: Semantics(
+                        child: TextFormField(
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: 'Number of items',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          onSaved: (val) {
+                            uploadPost(val);
+                          },
+                          validator: (val) {
+                            if (val.isEmpty) {
+                              return 'Please add a number';
+                            } else {
+                              return null;
+                            }
+                          },
                         ),
-                        keyboardType: TextInputType.number,
-                        onSaved: (val) {
-                          uploadPost(val);
-                        },
-                        validator: (val) {
-                          if (val.isEmpty) {
-                            return 'Please add a number';
-                          } else {
-                            return null;
-                          }
-                        },
+                        focused: true,
+                        hint: 'Number of items wasted',
+                        textField: true,
                       ),
                       width: 300),
                   SizedBox(height: 40),
-                  RaisedButton(
-                    child: Text('Post photo'),
-                    onPressed: () {
-                      if (formkey.currentState.validate()) {
-                        formkey.currentState.save();
+                  Semantics(
+                    child: RaisedButton(
+                      child: Text('Post photo'),
+                      onPressed: () {
+                        if (formkey.currentState.validate()) {
+                          formkey.currentState.save();
+                        }
                       }
-                    }
+                    ),
+                    button: true,
+                    enabled: true,
+                    onTapHint: 'Upload post to cloud',
                   )
               ],
             ),

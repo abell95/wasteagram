@@ -37,11 +37,16 @@ class _WasteagramState extends State<Wasteagram> {
           }
         }
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/new-gram');
-        },
-        child: Icon(Icons.camera_alt),
+      floatingActionButton: Semantics(
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed('/new-gram');
+          },
+          child: Icon(Icons.camera_alt),
+        ),
+        button: true,
+        enabled: true,
+        onTapHint: 'Add a new post',
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
