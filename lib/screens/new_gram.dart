@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
+import 'package:intl/intl.dart';
 
 class NewGramScreen extends StatefulWidget {
   static const routeName = "/new-gram";
@@ -19,6 +21,22 @@ class _NewGramScreenState extends State<NewGramScreen> {
     setState(() {
       image = image;
     });
+  }
+
+  void uploadPost() async {
+    // upload image, get url
+    // get number of items from form
+    // create waste post model w/stuff
+    // upload that sucker to firebase
+    var location = await getLocationData();
+    String time = DateFormat.yMMMMEEEEd().format(DateTime.now());
+    print('${location.latitude} ${location.longitude}');
+    print(time);
+  }
+
+  Future<LocationData> getLocationData() async {
+    var locationService = Location();
+    return await locationService.getLocation();
   }
 
   @override
@@ -48,7 +66,7 @@ class _NewGramScreenState extends State<NewGramScreen> {
                 RaisedButton(
                   child: Text('Post photo'),
                   onPressed: () {
-                    // 
+                    uploadPost();
                   }
                 )
               ],
