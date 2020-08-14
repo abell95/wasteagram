@@ -59,6 +59,8 @@ class _NewGramScreenState extends State<NewGramScreen> {
       'longitude': wastePost.longitude,
       'date': wastePost.datePosted,
     });
+
+    Navigator.of(context).pop();
   }
 
   Future<LocationData> getLocationData() async {

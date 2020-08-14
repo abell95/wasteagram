@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import './widgets/gram_post.dart';
 
 class Wasteagram extends StatefulWidget {
   Wasteagram({Key key, this.title}) : super(key: key);
@@ -16,13 +19,27 @@ class _WasteagramState extends State<Wasteagram> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CircularProgressIndicator(),
-          ],
-        ),
+      body: StreamBuilder(
+        stream: Firestore.instance.collection("posts").snapshots(),
+        builder: (content, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) {
+                var post = snapshot.data.documents[index];
+                return GramPost(post);
+                // return ListTile(
+                //   title: Text(post['date'].toString()),
+                //   trailing: Text(post['quantity'].toString()),
+                // );
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        }
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
