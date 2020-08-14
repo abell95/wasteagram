@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,7 +14,6 @@ class NewGramScreen extends StatefulWidget {
 }
 
 class _NewGramScreenState extends State<NewGramScreen> {
-
   File image;
 
   void getImage() async {
@@ -23,15 +23,15 @@ class _NewGramScreenState extends State<NewGramScreen> {
     });
   }
 
-  void uploadPost() async {
+  void uploadPost(String numberItems) async {
     // upload image, get url
-    // get number of items from form
     // create waste post model w/stuff
     // upload that sucker to firebase
     var location = await getLocationData();
     String time = DateFormat.yMMMMEEEEd().format(DateTime.now());
     print('${location.latitude} ${location.longitude}');
     print(time);
+    print(int.parse(numberItems));
   }
 
   Future<LocationData> getLocationData() async {
@@ -39,39 +39,70 @@ class _NewGramScreenState extends State<NewGramScreen> {
     return await locationService.getLocation();
   }
 
+  final formkey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return(
-      Scaffold(
+    return (Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text('New Post'),
         ),
-        body: image == null ?
-          Center(
+        body: image == null
+          ? Center(
             child: RaisedButton(
-              child: Text('Select photo'),
-              onPressed: () {
-                getImage();
-              }
-            ),
-          )
-          :
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.file(image, height: 300, width: 300,),
-                SizedBox(height: 40),
-                // number of wasted items
-                RaisedButton(
-                  child: Text('Post photo'),
-                  onPressed: () {
-                    uploadPost();
-                  }
-                )
+                child: Text('Select photo'),
+                onPressed: () {
+                  getImage();
+                }
+              ),
+            )
+          : Center(
+            child: Form(
+              key: formkey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 40),
+                  Image.file(
+                    image,
+                    height: 200,
+                    width: 200,
+                  ),
+                  SizedBox(height: 40),
+                  Container(
+                      child: TextFormField(
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          labelText: 'Number of items',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        onSaved: (val) {
+                          uploadPost(val);
+                        },
+                        validator: (val) {
+                          if (val.isEmpty) {
+                            return 'Please add a number';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      width: 300),
+                  SizedBox(height: 40),
+                  RaisedButton(
+                    child: Text('Post photo'),
+                    onPressed: () {
+                      if (formkey.currentState.validate()) {
+                        formkey.currentState.save();
+                      }
+                    }
+                  )
               ],
             ),
           )
+        )
       )
     );
   }
