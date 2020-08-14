@@ -22,16 +22,12 @@ class _WasteagramState extends State<Wasteagram> {
       body: StreamBuilder(
         stream: Firestore.instance.collection("posts").snapshots(),
         builder: (content, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data.documents.length != 0) {
             return ListView.builder(
               itemCount: snapshot.data.documents.length,
               itemBuilder: (context, index) {
                 var post = snapshot.data.documents[index];
                 return GramPost(post);
-                // return ListTile(
-                //   title: Text(post['date'].toString()),
-                //   trailing: Text(post['quantity'].toString()),
-                // );
               },
             );
           } else {
