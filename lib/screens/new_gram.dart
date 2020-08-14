@@ -1,10 +1,14 @@
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as fs;
+import 'package:uuid/uuid.dart';
+
+import '../models/waste_post.dart';
 
 class NewGramScreen extends StatefulWidget {
   static const routeName = "/new-gram";
@@ -23,15 +27,38 @@ class _NewGramScreenState extends State<NewGramScreen> {
     });
   }
 
+  Future<dynamic> uploadImage() async {
+    var uuid = Uuid();
+    var id = uuid.v4();
+
+    fs.StorageReference storageReference = fs.FirebaseStorage.instance.ref().child(id);
+    fs.StorageUploadTask uploadTask = storageReference.putFile(image);
+    await uploadTask.onComplete;
+    return await storageReference.getDownloadURL();
+  }
+
   void uploadPost(String numberItems) async {
-    // upload image, get url
-    // create waste post model w/stuff
     // upload that sucker to firebase
     var location = await getLocationData();
     String time = DateFormat.yMMMMEEEEd().format(DateTime.now());
-    print('${location.latitude} ${location.longitude}');
-    print(time);
-    print(int.parse(numberItems));
+
+    final url = await uploadImage();
+
+    var wastePost = WastePost(
+      numItems: int.parse(numberItems), 
+      photoURL: url, 
+      latitude: location.latitude, 
+      longitude: location.longitude,
+      datePosted: time
+    );
+
+    Firestore.instance.collection("posts").add({
+      'quantity': wastePost.numItems,
+      'imageURL': wastePost.photoURL,
+      'latitude': wastePost.latitude,
+      'longitude': wastePost.longitude,
+      'date': wastePost.datePosted,
+    });
   }
 
   Future<LocationData> getLocationData() async {

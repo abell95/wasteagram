@@ -1,8 +1,8 @@
 class WastePost {
   final int numItems;
   final String photoURL;
-  final String latitude;
-  final String longitude;
+  final double latitude;
+  final double longitude;
   final String datePosted;
 
   WastePost({
